@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="js/echarts.min.js"></script>
+    <script type="text/javascript" src="js/echarts-wordcloud.min.js"></script>
+    <script type="text/javascript" src="js/china.js"></script>
+</head>
+<body>
+
+<div id="main" style="width: 1000px;height:700px;"></div>
+
+<script th:inline="javascript">
+    var dataStr = [[${mapData}]];
+    var chart = echarts.init(document.getElementById("main"));
+
+    var option = {
+        title: {
+            text: '疫情地图',
+            subtext: '仅供参考',
+            x: 'center'
+        },
+
+        // tooltip: {
+        //     trigger: 'item'
+        // },
+        tooltip: {
+            triggerOn: "click",
+            formatter: function(e, t, n) {
+                return .5 == e.value ? e.name + "：有疑似病例" : e.seriesName + "<br />" + e.name + "：" + e.value
+            }
+        },
+        visualMap: {
+            min: 0,
+            max: 1000,
+            left: 26,
+            bottom: 40,
+            type: 'piecewise',
+            dimension: 0,       // series.data 的第四个维度（即 value[3]）被映射
+            seriesIndex: 0,     // 对第个系列进行映射。
+            // splitNumber: 5,
+            // color: ['#d94e5d','#eac736','#50a3ba'],
+            showLabel: !0,
+            text: ["高", "低"],
+            pieces: [{
+                gt: 1000,
+                label: "> 1000 人",
+                color: "#7f1100"
+            }, {
+                gte: 500,
+                lte: 1000,
+                label: "500 - 1000 人",
+                color: "#ff5999"
+            },{
+                gte: 100,
+                lte: 500,
+                label: "100 - 500 人",
+                color: "#ff5414"
+            }, {
+                gte: 30,
+                lt: 100,
+                label: "50 - 100 人",
+                color: "#ff8c71"
+            }, {
+                gt: 5,
+                lt: 30,
+                label: "3 - 30",
+                color: "#ffd768"
+            }, {
+                gt: 0,
+                lt: 5,
+                label: "0 - 5",
+                color: "#FCFF9B"
+            }],
+            show: true
+        },
+        geo: {
+            map: "china",
+            roam: !1,
+            scaleLimit: {
+                min: 1,
+                max: 2
+            },
+            zoom: 1.1,
+            label: {
+                normal: {
+                    show: !0,
+                    fontSize: "10",
+                    color: "rgba(0,0,0,0.7)"
+                }
+            },
+            itemStyle: {
+                normal: {
+                    borderWidth: .5,
+                    areaColor: "#009fe8",
+                    borderColor: "#ffefd5"
+                },
+                emphasis: {
+                    areaColor: "#fff",
+                    borderColor: "#4b0082",
+                    borderWidth: .5
+                }
+            }
+        },
+        series: [{
+            data: JSON.parse(dataStr),
+            name: "现存确诊人数",
+            type: "map",
+            // coordinateSystem: "geo",
+            geoIndex: 0,
+        }]
+        // series: [
+        //     {
+        //         name: '现存确诊',
+        //         type: 'map',
+        //         mapType: 'china',
+        //         roam: false,
+        //         label: {
+        //             normal: {
+        //                 // formatter: '{b}',
+        //                 position: 'center',
+        //                 show: true,
+        //                 textStyle: {
+        //                     color: 'rgba(0,0,0,0.4)'
+        //                 }
+        //             },
+        //             emphasis: {
+        //                 show: true
+        //             }
+        //         },
+        //         data: JSON.parse(dataStr)
+        //     }
+        // ]
+    };
+
+    chart.setOption(option)
+
+</script>
+
+</body>
+</html>
